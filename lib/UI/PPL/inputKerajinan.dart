@@ -122,27 +122,27 @@ class _InputKerajinanState extends State<InputKerajinan> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.all(5),
-                  child: DropdownButtonFormField(
-                    value: idPerusahaan == 0 ? null : idPerusahaan,
-                    hint: Text("Pilih Asal Kerajinan"),
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.category_rounded),
-                    ),
-                    items: _perusahaan.map((item) {
-                      return DropdownMenuItem(
-                          child: Text(item.namaPerusahaanKerajinan),
-                          value: item.idPerusahaanKerajinan.toInt());
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        idPerusahaan = value as int;
-                      });
-                    },
-                    validator: (u) => u == null ? "Required" : null,
-                  ),
-                ),
+                // Padding(
+                //   padding: EdgeInsets.all(5),
+                //   child: DropdownButtonFormField(
+                //     value: idPerusahaan == 0 ? null : idPerusahaan,
+                //     hint: Text("Pilih Asal Kerajinan"),
+                //     decoration: const InputDecoration(
+                //       icon: Icon(Icons.category_rounded),
+                //     ),
+                //     items: _perusahaan.map((item) {
+                //       return DropdownMenuItem(
+                //           child: Text(item.namaPerusahaanKerajinan),
+                //           value: item.idPerusahaanKerajinan.toInt());
+                //     }).toList(),
+                //     onChanged: (value) {
+                //       setState(() {
+                //         idPerusahaan = value as int;
+                //       });
+                //     },
+                //     validator: (u) => u == null ? "Required" : null,
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.all(5),
                   child: TextFormField(

@@ -6,8 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/Models/kerajinan.dart';
 
 class ApiStatic {
-  static final host = 'http://192.168.232.53/laravel-breeze/public';
-  static final token = "10|Qtzy7K3objUoWkXReI819Pmr7WQOJGK3DACVNYQD";
+  static final host = 'http://192.168.185.53/laravel-breeze/public';
+  static final token = "7|ywob1uZPxP0b6MNWxP92sewpC3DCfPK0JhHzctsW";
   static getHost() {
     return host;
   }
@@ -38,6 +38,34 @@ class ApiStatic {
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         print(json);
+        final parsed = json['data'].cast<Map<String, dynamic>>();
+        return parsed
+            .map<Kerajinan>((json) => Kerajinan.fromJson(json))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<List<Kerajinan>> getKerajinanFilter(
+      int pageKey, String _s, String _selectedChoice) async {
+    try {
+      final response = await http.get(
+          Uri.parse("$host/api/kerajinan?page=" +
+              pageKey.toString() +
+              "&s=" +
+              _s +
+              "&publish=" +
+              _selectedChoice),
+          headers: {
+            'Authorization': 'Bearer ' + token,
+          });
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        //print(json);
         final parsed = json['data'].cast<Map<String, dynamic>>();
         return parsed
             .map<Kerajinan>((json) => Kerajinan.fromJson(json))

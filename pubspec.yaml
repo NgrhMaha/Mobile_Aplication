@@ -30,6 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_svg: ^0.17.4
   image_picker: ^0.8.4+1
+  infinite_scroll_pagination: ^3.0.1+1
 
 dev_dependencies:
   flutter_test:

@@ -60,10 +60,9 @@ class _KerajinanPageState extends State<KerajinanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      // appBar: AppBar(
-      //   title: Text("Daftar Kerajinan"),
-      // ),
+      appBar: AppBar(
+        title: Text("Daftar Kerajinan"),
+      ),
       //drawer: Drawer(),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -84,30 +83,30 @@ class _KerajinanPageState extends State<KerajinanPage> {
                       )));
         },
       ),
-
-      body: SingleChildScrollView(
-          child: Stack(
-        children: [
-          Container(
-            padding: EdgeInsets.only(top: 100),
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: RefreshIndicator(
-              onRefresh: () => Future.sync(() => _pagingController.refresh()),
-              child: PagedListView<int, Kerajinan>(
-                pagingController: _pagingController,
-                builderDelegate: PagedChildBuilderDelegate<Kerajinan>(
-                  itemBuilder: (context, item, index) => Container(
-                    child: InkWell(
+      body: FutureBuilder<List<Kerajinan>>(
+        future: ApiStatic.getKerajinan(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            List<Kerajinan> listKerajinan = snapshot.data!;
+            return Container(
+              //padding: EdgeInsets.all(5),
+              child: ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (BuildContext context, int index) => Column(
+                  children: [
+                    InkWell(
                       onTap: () {
                         Navigator.of(context).push(new MaterialPageRoute(
                             builder: (BuildContext context) =>
                                 DetailKerajinanPage(
-                                  kerajinan: item,
+                                  kerajinan: listKerajinan[index],
                                 )));
                       },
                       child: Container(
-                        height: 100,
                         padding: EdgeInsets.all(5),
                         margin: EdgeInsets.only(top: 10),
                         width: double.infinity,
@@ -120,16 +119,16 @@ class _KerajinanPageState extends State<KerajinanPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Image.network(
-                              ApiStatic.host + '/' + item.foto,
-                              width: 50,
+                              ApiStatic.host + '/' + listKerajinan[index].foto,
+                              width: 30,
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 5, right: 5),
                               child: Column(
                                 children: [
-                                  Text(item.nama_kerajinan),
+                                  Text(listKerajinan[index].nama_kerajinan),
                                   Text(
-                                    item.harga,
+                                    listKerajinan[index].harga,
                                     style: TextStyle(fontSize: 12),
                                   ),
                                 ],
@@ -144,15 +143,16 @@ class _KerajinanPageState extends State<KerajinanPage> {
                                         new MaterialPageRoute(
                                             builder: (BuildContext context) =>
                                                 InputKerajinan(
-                                                  kerajinan: item,
+                                                  kerajinan:
+                                                      listKerajinan[index],
                                                 )));
                                   },
                                   child: Icon(Icons.edit),
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    deleteKerajinan(item.id_kerajinan);
-                                    _pagingController.refresh();
+                                    deleteKerajinan(
+                                        listKerajinan[index].id_kerajinan);
                                   },
                                   child: Icon(Icons.delete),
                                 )
@@ -167,7 +167,8 @@ class _KerajinanPageState extends State<KerajinanPage> {
                                         new MaterialPageRoute(
                                             builder: (BuildContext context) =>
                                                 InputKerajinan(
-                                                  kerajinan: item,
+                                                  kerajinan:
+                                                      listKerajinan[index],
                                                 )));
                                   },
                                 )
@@ -176,130 +177,14 @@ class _KerajinanPageState extends State<KerajinanPage> {
                           ],
                         ),
                       ),
-                    ),
-                  ),
+                    )
+                  ],
                 ),
               ),
-            ),
-          ),
-          Container(
-            height: 100,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30)),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                    icon: Icon(
-                      Icons.menu,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    "Kerajinan",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            height: 100,
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30))),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  IconButton(
-                      onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                      icon: Icon(
-                        Icons.menu,
-                        color: Colors.white,
-                      )),
-                  Text(
-                    "Data Kerajinan",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  PopupMenuButton(
-                    icon: Icon(
-                      Icons.filter_list,
-                      color: Colors.white,
-                    ),
-                    initialValue: _publish,
-                    onSelected: (String result) {
-                      setState(() {
-                        _publish = result;
-                        _pagingController.refresh();
-                      });
-                    },
-                    itemBuilder: (BuildContext context) =>
-                        <PopupMenuItem<String>>[
-                      new PopupMenuItem<String>(
-                          child: const Text('Aktif'), value: 'Y'),
-                      new PopupMenuItem<String>(
-                          child: const Text('Non Aktif'), value: 'N'),
-                      new PopupMenuItem<String>(
-                          child: const Text('Semua'), value: 'A'),
-                      new PopupMenuItem<String>(
-                          child: const Text('Deleted'), value: 'D'),
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 70,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Material(
-                    elevation: 5.0,
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                    child: TextField(
-                      controller: _s,
-                      onSubmitted: (_s) {
-                        _pagingController.refresh();
-                      },
-                      cursorColor: Theme.of(context).primaryColor,
-                      style: TextStyle(color: Colors.black, fontSize: 18),
-                      decoration: InputDecoration(
-                          hintText: "Masukkan Nama Kerajinan",
-                          hintStyle:
-                              TextStyle(color: Colors.black38, fontSize: 16),
-                          prefixIcon: Material(
-                            elevation: 0.0,
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                            child: Icon(Icons.search),
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 25, vertical: 13)),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
-      )),
+            );
+          }
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: 1,
